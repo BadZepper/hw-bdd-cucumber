@@ -44,8 +44,24 @@ class MoviesController < ApplicationController
     flash[:notice] = "Movie '#{@movie.title}' deleted."
     redirect_to movies_path
   end
-
+  def search_tmdb
+    @movie_title = params[:movie][:title]
+    dummy_movie = {
+      title: "Inception",
+      rating: "PG-13",
+      release_date: "16-Jul-2010"
+    }
+    if @movie_title == dummy_movie[:title]
+      @movie_detail = dummy_movie
+    else
+      redirect_to movies_path
+      flash[:notice] = "'#{@movie_title}' was not found in TMDb."
+    end
+  end
   private
+  def movie_params
+    params.require(:movie).permit(:title, :rating, :description, :release_date)
+  end
 
   def force_index_redirect
     if !params.key?(:ratings) || !params.key?(:sort_by)
@@ -67,3 +83,4 @@ class MoviesController < ApplicationController
     params[:sort_by] || session[:sort_by] || 'id'
   end
 end
+
